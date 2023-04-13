@@ -1,3 +1,4 @@
+
 import time
 import numpy as np
 from typing import List, Optional
@@ -12,7 +13,15 @@ def generate_data() -> List[int]:
     return np.random.randint(100, 10000, 1000).tolist()
 
 def process1(data: List[int]) -> List[int]:
-    """TODO: Document this function. What does it do? What are the inputs and outputs?"""
+    """TODO: Document this function. What does it do? What are the inputs and outputs?
+
+    Returns a list of the next largest prime number for every element in data
+
+    Args:
+	    data: A list of integers to be processed
+    Returns:
+	    List[int]: a list of prime numbers
+    """
     def foo(x):
         """Find the next largest prime number."""
         while True:
@@ -22,7 +31,14 @@ def process1(data: List[int]) -> List[int]:
     return [foo(x) for x in data]
 
 def process2(data: List[int]) -> List[int]:
-    """TODO: Document this function. What does it do? What are the inputs and outputs?"""
+    """TODO: Document this function. What does it do? What are the inputs and outputs?
+	Returns the next largest perfect square for every element in data
+    
+    Args:
+	    data: A list of integers to be processed
+    Returns:
+	    List: A list of perfect squares
+    """
     def foo(x):
         """Find the next largest prime number."""
         while True:
@@ -32,17 +48,25 @@ def process2(data: List[int]) -> List[int]:
     return [foo(x) for x in data]
 
 def final_process(data1: List[int], data2: List[int]) -> List[int]:
-    """TODO: Document this function. What does it do? What are the inputs and outputs?"""
+    """TODO: Document this function. What does it do? What are the inputs and outputs?
+	Returns the difference between each corresponding element in two lists.
+
+    Args:
+	    data1: a list of integers
+	    data2: another list of integers
+    Returns:
+	    List: a list of differences between elements of the two lists
+
+    """
     return np.mean([x - y for x, y in zip(data1, data2)])
 
-offload_url = 'http://192.168.4.74:5000' # TODO: Change this to the IP address of your server
+offload_url = 'http://172.20.10.3:5000' # TODO: Change this to the IP address of your server
 
 def run(offload: Optional[str] = None) -> float:
     """Run the program, offloading the specified function(s) to the server.
     
     Args:
         offload: Which function(s) to offload to the server. Can be None, 'process1', 'process2', or 'both'.
-
     Returns:
         float: the final result of the program.
     """
@@ -55,7 +79,9 @@ def run(offload: Optional[str] = None) -> float:
         def offload_process1(data):
             nonlocal data1
             # TODO: Send a POST request to the server with the input data
+            response = process1(data)
             data1 = response.json()
+            postresponse = requests.post(f'{offload_url}', json=data1)
         thread = threading.Thread(target=offload_process1, args=(data,))
         thread.start()
         data2 = process2(data)
@@ -67,9 +93,23 @@ def run(offload: Optional[str] = None) -> float:
         #   Make sure to cite any sources you use to answer this question.
     elif offload == 'process2':
         # TODO: Implement this case
+        data2 = 0
+        def offload_process2(data):
+            nonlocal data2
+            response = process2(data)
+            data2 = response.json()
+            postresponse = requests.post(f'{offload_url}', json=data2)
+
+        thread = threading.Thread(target=offload_process1, args=(data,))
+        thread.start()
+        data1 = process1(data)
+        thread.join()
         pass
     elif offload == 'both':
         # TODO: Implement this case
+        data1 = 0
+        data2 = 0
+        def offload
         pass
 
     ans = final_process(data1, data2)
